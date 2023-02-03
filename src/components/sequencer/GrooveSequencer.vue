@@ -55,6 +55,7 @@
           :instrument="track.instrument"
           style="margin: 1rem 1rem 1rem 0"
           :scale="scale"
+          @refresh="handleRefresh($event,track)"
         ></GrooveSequencerTrack>
       </div>
     </div>
@@ -117,6 +118,10 @@ export default {
   },
 
   methods: {
+    handleRefresh(cells,track){
+      this.activeCells=this.activeCells.filter((cell)=>{return cell.instrument!==track.instrument})
+      this.activeCells= this.activeCells.concat(cells)
+    },
     increaseView(){
       this.scale *=1.10
     },

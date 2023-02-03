@@ -13,11 +13,14 @@ export default new (class DrumPlayer {
     this.playAbleTracks = [];
     this.stop = false;
     this.repeatInterval = null;
+    this.timeOutInterval = null;
   }
 
   emit(name, data) {
     this.eventEmitterDelegate.emit(name, data);
   }
+
+
 
   setTempo(tempo) {
     this.dummyTimeConstant = 4000 * (60 / tempo); //
@@ -43,8 +46,7 @@ export default new (class DrumPlayer {
     const groupedTracks = _.groupBy(drumPiece, "instrument");
     const newTracks = [];
     for (const instrument in groupedTracks) {
-      newTracks.push(
-        this.createPlayAbleTrack(groupedTracks[instrument], instrument)
+      newTracks.push(this.createPlayAbleTrack(groupedTracks[instrument], instrument)
       );
     }
     this.playAbleTracks = newTracks;
@@ -58,12 +60,15 @@ export default new (class DrumPlayer {
   }
 
   setEndTimeOut() {
-    setTimeout(() => {
-      this.emit("end", { maxLength: this.maxLength });
+    this.timeOutInterval = setTimeout(() => {
+      if(this.stop===false){
+        this.emit("end", { maxLength: this.maxLength });
+      }
     }, this.maxLength * this.dummyTimeConstant);
   }
 
   prePareAndPlayPiece(drumPiece, tempo) {
+    console.log("prePareAndPlayPiece",drumPiece)
     this.preparePiece(drumPiece, tempo);
     this.setEndTimeOut();
     this.playPiece();
@@ -88,11 +93,12 @@ export default new (class DrumPlayer {
 
   clearAllIntervals() {
     clearInterval(this.repeatInterval);
+    clearInterval(this.timeOutInterval);
+    this.repeatInterval=null;
+    this.timeOutInterval=null;
+
   }
   setReplayTimeOut(drumPiece, tempo) {
-    // clearInterval(this.repeatInterval);
-    // this.setEndTimeOut(drumPiece);
-    // this.playPiece(drumPiece, tempo);
     this.repeatInterval = setInterval(() => {
       this.emit("end", { maxLength: this.maxLength });
       this.preparePiece(drumPiece, tempo);
@@ -100,7 +106,9 @@ export default new (class DrumPlayer {
     }, this.maxLength * this.dummyTimeConstant);
   }
   replay(drumPiece, tempo) {
+
     if (drumPiece && drumPiece.length > 0) {
+      console.log("replay",{drumPiece})
       this.prePareAndPlayPiece(drumPiece, tempo);
       this.setReplayTimeOut(drumPiece, tempo);
     }
@@ -120,8 +128,6 @@ export default new (class DrumPlayer {
         play: () => {
           for (const event of events) {
             setTimeout(() => {
-              // const dummyAudio = new Audio(audio.path);
-              // dummyAudio.play();
               if (!this.stop) {
                 audio.audio.currentTime = 0;
                 audio.audio.volume = audio.volume;

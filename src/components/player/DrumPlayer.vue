@@ -81,14 +81,21 @@ export default {
     replay() {
       this.replaying=true
       this.playing=true
-      DrPlayer.replay(this.audioEvents, this.bpm)
+      this.play()
+      // DrPlayer.replay(this.audioEvents, this.bpm)
     },
     handlePlayStart() {
       this.$emit("PlayStart")
     },
     handlePlayEnd(evt) {
-      this.playing=false
-      this.$emit("PlayEnd",evt)
+      if(this.replaying){
+        this.play()
+      }else{
+        this.playing=false
+        this.$emit("PlayEnd",evt)
+      }
+
+
     },
   },
   mounted() {

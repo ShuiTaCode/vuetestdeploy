@@ -1,13 +1,22 @@
 <template>
-  <div class="track-layout">
-    <div
-      @click="handleCellSelect(cell.id)"
-      :class="'grid-cell-layout' + (cell.active ? ' active' : '')"
-      v-for="cell in dummyArray"
-      :key="cell.id"
-      :style="{ height: '5vh', minWidth: computedCellLength + 'px' }"
-    >
-      <!--    <div @click="handleCellSelect(cell)" :class="'grid-cell-layout active'" v-for="cell in gridCellArray" :key="cell.id" :style="{height: '5vh',minWidth:computedCellLength + 'px'}" >-->
+  <div
+    style="
+      height: 10vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    "
+  >
+    <div class="track-layout">
+      <div
+        @click="handleCellSelect(cell.id)"
+        :class="'grid-cell-layout' + (cell.active ? ' active' : '')"
+        v-for="cell in dummyArray"
+        :key="cell.id"
+        :style="{ height: '5vh', minWidth: computedCellLength + 'px' }"
+      >
+        <!--    <div @click="handleCellSelect(cell)" :class="'grid-cell-layout active'" v-for="cell in gridCellArray" :key="cell.id" :style="{height: '5vh',minWidth:computedCellLength + 'px'}" >-->
+      </div>
     </div>
   </div>
 </template>
@@ -16,33 +25,38 @@
 // import { ApplicationConfig } from "@/ApplicationConfig";
 // import TrackPanelButton from "@/components/buttons/TrackPanelButton.vue";
 import _ from "lodash";
-import {ApplicationConfig} from "@/ApplicationConfig";
+import { ApplicationConfig } from "@/ApplicationConfig";
 
 export default {
   name: "GrooveSequencerTrack",
   // components: {TrackPanelButton},
   props: {
-    trackId:{
-      type:Number
+    trackId: {
+      type: Number,
     },
     grid: {
       type: Number,
       default: 1,
     },
-    instrument:{
-      type:String,
-      default: ApplicationConfig.drums.HIHAT
+    instrument: {
+      type: String,
+      default: ApplicationConfig.drums.HIHAT,
     },
-    scale:{
-      type:Number,
-      default:500
-    }
+    scale: {
+      type: Number,
+      default: 500,
+    },
   },
   data() {
     return {
       // scale: 500,
       dummyArray: [],
     };
+  },
+  watch:{
+    grid(nv){
+      this.dummyArrayRefreshiation(nv)
+    }
   },
   computed: {
     computedCellLength() {
@@ -73,15 +87,38 @@ export default {
       const notSoDummyConstant = dummyConstant / this.grid;
       for (let i = 0; i < notSoDummyConstant; i++) {
         array.push({
-          trackId:this.trackId,
+          trackId: this.trackId,
           id: i,
           start: i * this.grid,
-          grid:this.grid,
+          grid: this.grid,
           active: false,
-          instrument:this.instrument
+          instrument: this.instrument,
         });
       }
       this.dummyArray = array;
+    },
+    dummyArrayRefreshiation(grid) {
+      const array = [];
+      const dummyConstant = 4; // länge von 10 viertelnoten
+      const notSoDummyConstant = dummyConstant / grid;
+      console.log("LOG", this.dummyArray, this.dummyArray.map((cell) => {
+       return cell.start;
+      }))
+      for (let i = 0; i < notSoDummyConstant; i++) {
+        array.push({
+          trackId: this.trackId,
+          id: i,
+          start: i * grid,
+          grid: this.grid,
+          active: this.dummyArray.some((cell) => {
+              return cell.start === i * grid && cell.active;
+            }),
+          instrument: this.instrument,
+        });
+      }
+      this.dummyArray = array;
+      this.$emit("refresh",this.dummyArray.filter((ele)=>{return ele.active}))
+
     },
     handleCellSelect(cellId) {
       var cellArray = [...this.dummyArray];
@@ -90,13 +127,11 @@ export default {
       if (cell) {
         if (cell.active) {
           cell.active = false;
-          cell.start= cell.id * this.grid,
-          cell.grid=this.grid;
+          (cell.start = cell.id * this.grid), (cell.grid = this.grid);
           this.$emit("cell-select", cell);
         } else {
           cell.active = true;
-          cell.start= cell.id * this.grid,
-          cell.grid=this.grid;
+          (cell.start = cell.id * this.grid), (cell.grid = this.grid);
           this.$emit("cell-select", cell);
         }
       }
@@ -112,7 +147,6 @@ export default {
 <style scoped>
 .track-layout {
   display: flex;
-  height: 5vh;
 }
 
 .grid-cell-layout {

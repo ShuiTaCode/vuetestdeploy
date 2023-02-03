@@ -22,6 +22,11 @@ export const ApplicationConfig = {
         {id:9,label:"1/9",value:parseFloat((1/9).toFixed(5))},
         {id:10,label:"1/10",value:parseFloat((1/10).toFixed(5))},
         {id:11,label:"1/11",value:parseFloat((1/11).toFixed(5))},
+        {id:11,label:"1/12",value:parseFloat((1/12).toFixed(5))},
+        {id:11,label:"1/13",value:parseFloat((1/13).toFixed(5))},
+        {id:11,label:"1/14",value:parseFloat((1/14).toFixed(5))},
+        {id:11,label:"1/15",value:parseFloat((1/15).toFixed(5))},
+        {id:11,label:"1/16",value:parseFloat((1/16).toFixed(5))},
     ],
 
 
