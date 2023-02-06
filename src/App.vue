@@ -1,43 +1,54 @@
 <template>
   <TopBar :model="items" />
-  <h2>Deine grooves</h2>
-  <AccorDion>
-    <AccordionTab
-      style="padding: 0.5rem !important"
-      header="Dein erster groove"
-    >
-      <GrooveSequencer />
-    </AccordionTab>
+  <h2>Deine Lektionen</h2>
 
-    <AccordionTab :key="lesson.id" v-for="lesson in lessons" :header="lesson.label">    <GrooveSequencer /> </AccordionTab>
+  <BasicAccordion>
 
-    <AccordionTab :disabled="true">
+
+    <AccordionTab :key="lesson.sort" v-for="lesson in sortBy(lessons,'sort')" >
       <template #header>
-        <RowCenterDiv>
-          <template #default>
-            <div style="margin-right: 1rem">Stunde 1</div>
-            <i class="pi pi-lock"></i>
-          </template>
-        </RowCenterDiv>
+        <InputText @@keydown="handleInput" v-if="GLOBALEDIT" v-model="lesson.label"></InputText><div v-else>{{lesson.label}}</div>
       </template>
-      Content
+      <div :key="content.sort" v-for="content in sortBy(lesson.content,'sort')">
+        <GrooveSequencer v-model:tempo="content.tempo"  v-if="content.type==='groove'" v-model:initArray="content.value"  />
+        <ContentText :edit="GLOBALEDIT"  v-model:text="content.value" v-if="content.type==='text'"></ContentText>
+      </div>
+      <DropDown v-if="GLOBALEDIT" v-model="selectedContentType" :options="[ApplicationConfig.contentType.TEXT,ApplicationConfig.contentType.GROOVE]" ></DropDown>
+      <BasicButton v-if="GLOBALEDIT" label="createContent" @click="createContent(lesson,selectedContentType)"></BasicButton>
+      <BasicButton v-if="GLOBALEDIT" label="SaveLesson" @click="triggerSave(lesson)"></BasicButton>
     </AccordionTab>
-  </AccorDion>
+
+
+  </BasicAccordion>
+  <BasicButton v-if="GLOBALEDIT" label="Neue Lesson" @click="createNewLesson"></BasicButton>
 </template>
 
 <script>
 // import HelloWorld from './components/HelloWorld.vue'
 
 import GrooveSequencer from "@/components/sequencer/GrooveSequencer.vue";
+import ContentText from "@/components/form/ContentText.vue";
+// import {ApplicationConfig} from "@/ApplicationConfig";
 
 // import CenterDiv from "@/components/ColCenterDiv.vue";
 // import ColCenterDiv from "@/components/ColCenterDiv.vue";
-import RowCenterDiv from "@/components/RowCenterDiv.vue";
-
+// import RowCenterDiv from "@/components/RowCenterDiv.vue";
+import _ from "lodash"
+import AXIOS from "@/clients/axoisClient";
+import {ApplicationConfig} from "@/ApplicationConfig";
+import BasicAccordion from "@/components/mainpage/BasicAccordion.vue";
 export default {
   name: "App",
+  computed: {
+    ApplicationConfig() {
+      return ApplicationConfig
+    },
+
+  },
   components: {
-    RowCenterDiv,
+    BasicAccordion,
+    ContentText,
+    // RowCenterDiv,
     // ColCenterDiv,
     // CenterDiv,
 
@@ -46,21 +57,12 @@ export default {
   },
   data() {
     return {
+      GLOBALEDIT:false,
+      // GLOBALEDIT:true,
       lessons:[
-        {id:1,label:"Erster Groove"}  ,
-        {id:2,label:"Zweiter Groove"}  ,
-        {id:3,label:"test Groove"}  ,
-        {id:4,label:"blast Groove"}  ,
-        {id:5,label:"anderer Groove"}  ,
-        {id:6,label:"and Groove"}  ,
-        {id:8,label:"Ersterdbfhrfr Groove"}  ,
-        {id:9,label:"and Groove Groove"}  ,
-        {id:10,label:"and Groove Groove Groove"}  ,
-        {id:11,label:"rg Groove"}  ,
-        {id:12,label:"grg Groove"}  ,
-        {id:13,label:"Ersterdbfhrfr Groove"}  ,
-        {id:14,label:"Ersterdbfhrfr Groove"}  ,
+
       ],
+      selectedContentType:ApplicationConfig.contentType.TEXT,
       items: [
         {
           label: "File",
@@ -93,99 +95,71 @@ export default {
             },
           ],
         },
-        {
-          label: "Edit",
-          icon: "pi pi-fw pi-pencil",
-          items: [
-            {
-              label: "Left",
-              icon: "pi pi-fw pi-align-left",
-            },
-            {
-              label: "Right",
-              icon: "pi pi-fw pi-align-right",
-            },
-            {
-              label: "Center",
-              icon: "pi pi-fw pi-align-center",
-            },
-            {
-              label: "Justify",
-              icon: "pi pi-fw pi-align-justify",
-            },
-          ],
-        },
-        {
-          label: "Users",
-          icon: "pi pi-fw pi-user",
-          items: [
-            {
-              label: "New",
-              icon: "pi pi-fw pi-user-plus",
-            },
-            {
-              label: "Delete",
-              icon: "pi pi-fw pi-user-minus",
-            },
-            {
-              label: "Search",
-              icon: "pi pi-fw pi-users",
-              items: [
-                {
-                  label: "Filter",
-                  icon: "pi pi-fw pi-filter",
-                  items: [
-                    {
-                      label: "Print",
-                      icon: "pi pi-fw pi-print",
-                    },
-                  ],
-                },
-                {
-                  icon: "pi pi-fw pi-bars",
-                  label: "List",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          label: "Events",
-          icon: "pi pi-fw pi-calendar",
-          items: [
-            {
-              label: "Edit",
-              icon: "pi pi-fw pi-pencil",
-              items: [
-                {
-                  label: "Save",
-                  icon: "pi pi-fw pi-calendar-plus",
-                },
-                {
-                  label: "Delete",
-                  icon: "pi pi-fw pi-calendar-minus",
-                },
-              ],
-            },
-            {
-              label: "Archieve",
-              icon: "pi pi-fw pi-calendar-times",
-              items: [
-                {
-                  label: "Remove",
-                  icon: "pi pi-fw pi-calendar-minus",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          label: "Quit",
-          icon: "pi pi-fw pi-power-off",
-        },
       ],
     };
   },
+
+  methods:{
+    handleInput(event){
+      // console.log(event)
+      event.preventDefault()
+    },
+    sortBy(collection,iterate){
+      return _.sortBy(collection,iterate)
+    },
+    createContent(lesson,contentType){
+      const content =
+          {
+            tempo:60,
+            type: contentType,
+            sort: lesson.content && lesson.content.length > 0 ? (_.maxBy(lesson.content, "sort").sort + 1) : 1,
+            value: null
+          }
+          lesson.content.push(content)
+      this.updateLesson(lesson)
+    },
+    createNewLesson(){
+      const max = _.maxBy(this.lessons,"sort")
+      const lesson = {
+        sort:(max ? max.sort : 0) + 1,
+        content:[],
+        label:"TestStunde",
+        locked:false,
+      }
+      this.createLesson(lesson)
+    },
+
+    triggerSave(lesson){
+        console.log("Prepare to save lesson: ",lesson)
+      this.updateLesson(lesson)
+    },
+
+    createLesson(lesson){
+      return AXIOS.post("/lessons/insert", lesson).then((r) => {
+        console.log("Post result:", r);
+        this.load()
+      });
+    },
+    updateLesson(lesson){
+      return AXIOS.put("/lessons/update", lesson).then((r) => {
+        console.log("Post result:", r);
+        this.load()
+      });
+    },
+    getGrooveById(id){
+      console.log('getGrooveById',id)
+      return []
+    },
+    load() {
+      return AXIOS.get("/lessons/findAll").then((r) => {
+        console.log("Result:", r);
+        this.lessons = r.data;
+      });
+    }
+  },
+  mounted() {
+   this.load()
+  }
 };
 </script>
 

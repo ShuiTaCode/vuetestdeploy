@@ -1,10 +1,10 @@
 export const ApplicationConfig = {
     drums:{
         HIHAT: "Hi-Hat",
-        SNDRM:"Snare-Dr",
-        BSDRM:"Bass-Dr",
-        RDCYB:"Ride-Cymbal",
-        CSCYB:"Crash-Cymbal",
+        SNDRM:"Snare",
+        BSDRM:"Bass",
+        RDCYB:"Ride",
+        CSCYB:"Crash",
         HITOM:"High-Tom",
         MDTOM:"Mid-Tom",
         LWTOM:"Low-Tom",
@@ -34,5 +34,12 @@ export const ApplicationConfig = {
     trackOptions:{
         MUTE:"Mute",
         SOLO:"Solo"
+    },
+
+
+    contentType:{
+        TEXT:"text",
+        GROOVE:"groove"
+
     }
 }

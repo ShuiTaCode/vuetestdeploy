@@ -1,7 +1,6 @@
 <template>
   <div
     style="
-      height: 10vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -9,12 +8,16 @@
   >
     <div class="track-layout">
       <div
-        @click="handleCellSelect(cell.id)"
+        @click="handleCellSelect(cell)"
         :class="'grid-cell-layout' + (cell.active ? ' active' : '')"
-        v-for="cell in dummyArray"
+        v-for="cell in computedDummyArray"
         :key="cell.id"
-        :style="{ height: '5vh', minWidth: computedCellLength + 'px' }"
+        :style="{ height: '5rem', minWidth: computedCellLength + 'px' }"
       >
+
+        <div style="display: flex;justify-content: center">
+          <div class="glow-select" v-if="cell.active"></div>
+        </div>
         <!--    <div @click="handleCellSelect(cell)" :class="'grid-cell-layout active'" v-for="cell in gridCellArray" :key="cell.id" :style="{height: '5vh',minWidth:computedCellLength + 'px'}" >-->
       </div>
     </div>
@@ -26,6 +29,7 @@
 // import TrackPanelButton from "@/components/buttons/TrackPanelButton.vue";
 import _ from "lodash";
 import { ApplicationConfig } from "@/ApplicationConfig";
+// import {re} from "@babel/core/lib/vendor/import-meta-resolve";
 
 export default {
   name: "GrooveSequencerTrack",
@@ -46,19 +50,34 @@ export default {
       type: Number,
       default: 500,
     },
+    initArray:{
+      type:Array
+    }
   },
   data() {
     return {
       // scale: 500,
-      dummyArray: [],
+      // computedInitArray: [],
     };
   },
   watch:{
-    grid(nv){
-      this.dummyArrayRefreshiation(nv)
-    }
+    // computedInitArray(nv){
+    //   this.computedInitArrayRefreshiation(nv)
+    // },
+    // initArray(nv){
+    //   this.remoteDummyInitArrayInitialization(nv)
+    // }
   },
   computed: {
+
+    computedInitArray:{
+      get(){
+        return this.initArray
+      },
+      set(nv){
+        this.$emit("update:initArray",nv)
+      }
+    },
     computedCellLength() {
       return this.grid * this.scale;
     },
@@ -79,9 +98,8 @@ export default {
         this.$emit("update:solo", nv);
       },
     },
-  },
-  methods: {
-    dummyArrayInitialization() {
+    computedDummyArray() {
+
       const array = [];
       const dummyConstant = 4; // länge von 10 viertelnoten
       const notSoDummyConstant = dummyConstant / this.grid;
@@ -91,55 +109,62 @@ export default {
           id: i,
           start: i * this.grid,
           grid: this.grid,
-          active: false,
+          active: this.computedInitArray.some((cell) => {
+            return cell.start === i * this.grid;
+          }),
           instrument: this.instrument,
         });
       }
-      this.dummyArray = array;
+      // console.log("compute computedDummyArray",array,this.computedInitArray)
+      return array;
     },
-    dummyArrayRefreshiation(grid) {
-      const array = [];
-      const dummyConstant = 4; // länge von 10 viertelnoten
-      const notSoDummyConstant = dummyConstant / grid;
-      console.log("LOG", this.dummyArray, this.dummyArray.map((cell) => {
-       return cell.start;
-      }))
-      for (let i = 0; i < notSoDummyConstant; i++) {
-        array.push({
-          trackId: this.trackId,
-          id: i,
-          start: i * grid,
-          grid: this.grid,
-          active: this.dummyArray.some((cell) => {
-              return cell.start === i * grid && cell.active;
-            }),
-          instrument: this.instrument,
-        });
-      }
-      this.dummyArray = array;
-      this.$emit("refresh",this.dummyArray.filter((ele)=>{return ele.active}))
+  },
+  methods: {
+    // remoteDummyInitArrayInitialization(array){
+    //   console.log("remoteDummyInitArrayInitialization",array)
+    //   const result = [];
+    //   for(const cell of this.computedInitArray){
+    //    cell.active = array.some(arrayCell=>{return arrayCell.start===cell.start})
+    //     result.push(cell)
+    //   }
+    //   this.computedInitArray=result
+    //   this.$emit("refresh",this.computedInitArray.filter((ele)=>{return ele.active}))
+    // },
 
-    },
-    handleCellSelect(cellId) {
-      var cellArray = [...this.dummyArray];
-      const cell = _.find(cellArray, { id: cellId });
-      console.log("CellSelect: cell: ", cell);
-      if (cell) {
-        if (cell.active) {
-          cell.active = false;
-          (cell.start = cell.id * this.grid), (cell.grid = this.grid);
-          this.$emit("cell-select", cell);
+
+    handleCellSelect(cell) {
+      var cellArray = [...this.computedDummyArray];
+      const existingCell = _.find(cellArray,{start:cell.start})
+      console.log("handleCellSelect",{cell,cellArray,existingCell})
+      if(existingCell) {
+        if (existingCell.active) {
+          this.computedInitArray = this.computedInitArray.filter((arrayCell) => {
+            return arrayCell.start !== existingCell.start
+          })
         } else {
-          cell.active = true;
-          (cell.start = cell.id * this.grid), (cell.grid = this.grid);
-          this.$emit("cell-select", cell);
+          const array = [...this.computedInitArray]
+          array.push(cell)
+          this.computedInitArray = array
         }
       }
-      this.dummyArray = cellArray;
+      // const cell = _.find(cellArray, { id: cellId });
+      // console.log("CellSelect: cell: ", cell);
+      // if (cell) {
+      //   if (cell.active) {
+      //     cell.active = false;
+      //     (cell.start = cell.id * this.grid), (cell.grid = this.grid);
+      //     this.$emit("cell-select", cell);
+      //   } else {
+      //     cell.active = true;
+      //     (cell.start = cell.id * this.grid), (cell.grid = this.grid);
+      //     this.$emit("cell-select", cell);
+      //   }
+      // }
+      // this.computedInitArray = cellArray;
     },
   },
   mounted() {
-    this.dummyArrayInitialization();
+    // this.remoteDummyInitArrayInitialization(this.initArray)
   },
 };
 </script>
@@ -153,6 +178,9 @@ export default {
   background-color: lightsalmon;
   border: solid black;
   border-width: 2px 1px 2px 1px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .active {
   background-color: #ee6127;
@@ -162,5 +190,15 @@ export default {
 }
 .track-layout .grid-cell-layout:last-child {
   border-width: 2px 2px 2px 1px;
+}
+.glow-select{
+  /*width: 1rem;*/
+  /*height: 1rem;*/
+  /*border-radius: 50%;*/
+  /*background-color: #7c5454;*/
+  /*box-shadow:*/
+  /*    0 0 0.6rem 0.30rem #7c5454,  !* inner white *!*/
+  /*    0 0 1rem 0.6rem #815b6c, !* middle magenta *!*/
+  /*    0 0 1.4rem 0.9rem #57404a; !* outer cyan *!*/
 }
 </style>

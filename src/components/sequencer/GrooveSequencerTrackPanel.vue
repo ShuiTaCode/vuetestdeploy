@@ -1,5 +1,5 @@
 <template>
-    <div style="height: 10vh;" class="track-panel" >
+    <div style="height: 5rem;" class="track-panel" >
       <div style="text-align: start;white-space: nowrap; ">
         {{label}}
       </div>
@@ -91,7 +91,9 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  /*padding:1rem*/
+  border: solid 1px gray;
+  padding:0 1rem 0 0.5rem;
+  z-index: 33;
 }
 .track-panel-buttons{
   display: flex;

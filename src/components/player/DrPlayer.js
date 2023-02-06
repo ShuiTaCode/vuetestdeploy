@@ -4,7 +4,7 @@ import { PlayerConfiguration } from "@/components/player/PlayerConfiguration";
 
 import { EventEmitter } from "events";
 
-export default new (class DrumPlayer {
+export default class DrumPlayer {
   constructor() {
     this.eventEmitterDelegate = new EventEmitter();
     this.dummyTimeConstant = 4000; //
@@ -144,4 +144,4 @@ export default new (class DrumPlayer {
       );
     }
   }
-})();
+}

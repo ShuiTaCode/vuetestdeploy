@@ -30,12 +30,12 @@
           v-model:grid="track.grid"
           :label="track.instrument"
           :key="track.id"
-          style="margin: 1rem 0.25rem 1rem 0.25rem"
+          style="margin: 0 0.25rem 0 0"
         ></GrooveSequencerTrackPanel>
       </div>
       <div style="position: relative">
         <div
-          ref="carrot"
+          :ref="carrotRefId"
           style="
             height: 100%;
             position: absolute;
@@ -47,15 +47,14 @@
       </div>
       <div ref="scrollarea" class="multi-track-area" style="width: 80%">
         <GrooveSequencerTrack
-          @cell-select="handleCellSelect"
           v-for="track in dummyTrackArray"
           :key="track.id"
           :track-id="track.id"
           :grid="track.grid"
           :instrument="track.instrument"
-          style="margin: 1rem 1rem 1rem 0"
+          style="margin: 0 1rem 0 0"
           :scale="scale"
-          @refresh="handleRefresh($event,track)"
+          v-model:initArray="track.initCells"
         ></GrooveSequencerTrack>
       </div>
     </div>
@@ -70,13 +69,23 @@ import DrumPlayer from "@/components/player/DrumPlayer.vue";
 // import DrPlayer from "@/components/player/DrPlayer";
 // import DrumPlayer from "@/components/player/DrPlayer";
 // import DrumPlayer from "@/components/player/DrumPlayer.vue";
-
+import _ from 'lodash'
 export default {
   name: "GrooveSequencer",
 
   components: { DrumPlayer, GrooveSequencerTrackPanel, GrooveSequencerTrack },
+  props:{
+    initArray:{
+      type:Array
+    },
+    tempo:{
+      type:Number,
+      default:60
+    }
+  },
   data() {
     return {
+      carrotRefId:(Math.random()*1000000).toString(),
       dummyTrackArray: [
         {
           id: 1,
@@ -84,6 +93,7 @@ export default {
           mute: false,
           grid: ApplicationConfig.signatures[3].value ,//quaternote/beat length
           instrument: ApplicationConfig.drums.HIHAT,
+          initCells:[]
         },
         {
           id: 2,
@@ -91,6 +101,7 @@ export default {
           mute: false,
           grid:  ApplicationConfig.signatures[3].value,
           instrument: ApplicationConfig.drums.SNDRM,
+          initCells:[]
         },
         {
           id: 3,
@@ -98,30 +109,57 @@ export default {
           mute: false,
           grid: ApplicationConfig.signatures[3].value,
           instrument: ApplicationConfig.drums.BSDRM,
+          initCells:[]
         },
       ],
-      activeCells: [],
       carrotX: 0,
-      bpm: 60,
+      // bpm: 60,
       carrotInterval: null,
-      scale:500,
+      scale:200,
     };
   },
   computed: {
+    bpm:{
+      get(){
+        return this.tempo
+      },
+      set(nv){
+        this.$emit("update:tempo",nv)
+      }
+    },
     carrotElement() {
-      if (this.$refs.carrot) {
-        return this.$refs.carrot;
+      if (this.$refs[this.carrotRefId]) {
+        return this.$refs[this.carrotRefId];
       } else {
         return null;
       }
     },
+    activeCells(){
+      let result = []
+      for(const track of this.dummyTrackArray){
+        result = result.concat(track.initCells)
+      }
+      return result
+    }
+  },
+  watch:{
+    dummyTrackArray:{
+      handler(){
+        this.$emit("update:initArray",this.activeCells)
+      },
+      deep:true
+    }
+
   },
 
   methods: {
-    handleRefresh(cells,track){
-      this.activeCells=this.activeCells.filter((cell)=>{return cell.instrument!==track.instrument})
-      this.activeCells= this.activeCells.concat(cells)
-    },
+    // handleRefresh(cells,track){
+    //   console.log("handleRefresh",cells)
+    //   this.activeCells=this.activeCells.filter((cell)=>{return cell.instrument!==track.instrument})
+    //   this.activeCells= this.activeCells.concat(cells)
+    //   this.$emit("update:initArray",this.activeCells)
+    //   console.error("update initArray",this.activeCells,this.initArray)
+    // },
     increaseView(){
       this.scale *=1.10
     },
@@ -144,6 +182,7 @@ export default {
       // DrPlayer.stopPiece()
     },
     handlePlayStart() {
+
       // DrPlayer.playPiece(this.activeCells,this.bpm)
       this.carrotX = 0;
       this.animateCarrot();
@@ -156,34 +195,49 @@ export default {
     formatUUID(trackId, cellId) {
       return trackId.toString() + cellId.toString();
     },
-    handleCellSelect(cell) {
-      console.log("Received cell in component above: ", cell);
-      if (cell) {
-        this.activeCells = this.activeCells.filter((actCell) => {
-          return (
-              this.formatUUID(actCell.trackId, actCell.id) !==
-              this.formatUUID(cell.trackId, cell.id)
-          );
-        });
-        if (cell.active) {
-          this.activeCells.push(cell);
-        }
-      } else {
-        console.log("handleCellSelect: handleCellSelect: Cell undefined", cell);
-      }
-      console.log(
-        "handleCellSelect: handleCellSelect: activeCells[] = ",
-        this.activeCells
-      );
-    },
+    // handleCellSelect(cell) {
+    //   console.log("Received cell in component above: ", cell);
+    //   if (cell) {
+    //     this.activeCells = this.activeCells.filter((actCell) => {
+    //       return (
+    //           this.formatUUID(actCell.trackId, actCell.id) !==
+    //           this.formatUUID(cell.trackId, cell.id)
+    //       );
+    //     });
+    //     if (cell.active) {
+    //       this.activeCells.push(cell);
+    //     }
+    //   } else {
+    //     console.log("handleCellSelect: handleCellSelect: Cell undefined", cell);
+    //   }
+    //   console.log(
+    //     "handleCellSelect: handleCellSelect: activeCells[] = ",
+    //     this.activeCells
+    //   );
+    // },
 
     handleScroll() {
       this.carrotElement.style.left =
         this.carrotX - this.$refs.scrollarea.scrollLeft + "px";
       // this.carrotX -= this.carrotX > 0 ? this.$refs.scrollarea.scrollLeft : 0
     },
+    initializeArray(array){
+      const groupedCells = _.groupBy(array,'instrument')
+      console.log("initializeArray",array,groupedCells)
+      for(const instrument in groupedCells){
+        const track = _.find(this.dummyTrackArray,{instrument: instrument})
+        if(track){
+          track.grid=(groupedCells[instrument])[0].grid
+          track.initCells = groupedCells[instrument]
+        }else{
+          console.error("initializeArray: No track for instrument: ",instrument)
+        }
+      }
+    }
   },
   mounted() {
+    // this.activeCells=this.initArray
+    this.initializeArray(this.initArray)
     this.$refs.scrollarea.addEventListener("scroll", this.handleScroll);
   },
   beforeUnmount() {
@@ -202,6 +256,6 @@ export default {
   overflow-x: scroll;
 }
 .sequencer-panel {
-  z-index: 10;
+  z-index: 99;
 }
 </style>
