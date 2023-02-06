@@ -10,6 +10,7 @@ import Topbar from "primevue/menubar"
 import InputNumber from "primevue/inputnumber";
 import Textarea from "primevue/textarea";
 import InputText from "primevue/inputtext";
+import Checkbox from "primevue/checkbox";
 const app = createApp(App)
 
 app.use(PrimeVue);
@@ -18,6 +19,7 @@ app.component("TopBar",Topbar)
 app.component("AccorDion",Accordion)
 app.component("AccordionTab",AccordionTab)
 app.component("BasicButton",Button)
+app.component("CheckBox",Checkbox)
 app.component("DropDown",Dropdown)
 app.component("ToggleButton",ToggleButton)
 app.component("TextArea",Textarea)

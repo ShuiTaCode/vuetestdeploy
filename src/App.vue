@@ -5,15 +5,21 @@
   <BasicAccordion>
 
 
-    <AccordionTab :key="lesson.sort" v-for="lesson in sortBy(lessons,'sort')" >
+    <AccordionTab :disabled="lesson.locked" :key="lesson.sort" v-for="lesson in sortBy(lessons,'sort')" >
       <template #header>
-        <InputText @@keydown="handleInput" v-if="GLOBALEDIT" v-model="lesson.label"></InputText><div v-else>{{lesson.label}}</div>
+        <InputText @keydown="handleInput" v-if="GLOBALEDIT" v-model="lesson.label"></InputText><div v-else>{{lesson.label}}</div>
+        <span v-if="GLOBALEDIT"> locked
+
+        <CheckBox style="pointer-events: all !important;" v-if="GLOBALEDIT" binary v-model="lesson.locked"></CheckBox>
+      </span>
       </template>
       <div :key="content.sort" v-for="content in sortBy(lesson.content,'sort')">
         <GrooveSequencer v-model:tempo="content.tempo"  v-if="content.type==='groove'" v-model:initArray="content.value"  />
         <ContentText :edit="GLOBALEDIT"  v-model:text="content.value" v-if="content.type==='text'"></ContentText>
+        <ContentYouTube style="width: 100%" :youtube-link="content.url" v-if="content.type==='video'"></ContentYouTube>
+        <InputText  v-if="GLOBALEDIT && content.type === ApplicationConfig.contentType.VIDEO" v-model="content.url"></InputText>
       </div>
-      <DropDown v-if="GLOBALEDIT" v-model="selectedContentType" :options="[ApplicationConfig.contentType.TEXT,ApplicationConfig.contentType.GROOVE]" ></DropDown>
+      <DropDown v-if="GLOBALEDIT" v-model="selectedContentType" :options="[ApplicationConfig.contentType.TEXT,ApplicationConfig.contentType.GROOVE,ApplicationConfig.contentType.VIDEO]" ></DropDown>
       <BasicButton v-if="GLOBALEDIT" label="createContent" @click="createContent(lesson,selectedContentType)"></BasicButton>
       <BasicButton v-if="GLOBALEDIT" label="SaveLesson" @click="triggerSave(lesson)"></BasicButton>
     </AccordionTab>
@@ -37,6 +43,7 @@ import _ from "lodash"
 import AXIOS from "@/clients/axoisClient";
 import {ApplicationConfig} from "@/ApplicationConfig";
 import BasicAccordion from "@/components/mainpage/BasicAccordion.vue";
+import ContentYouTube from "@/components/form/ContentYouTube.vue";
 export default {
   name: "App",
   computed: {
@@ -46,6 +53,7 @@ export default {
 
   },
   components: {
+    ContentYouTube,
     BasicAccordion,
     ContentText,
     // RowCenterDiv,
@@ -79,6 +87,7 @@ export default {
                 {
                   label: "Video",
                   icon: "pi pi-fw pi-video",
+                  command:()=>{this.GLOBALEDIT = !this.GLOBALEDIT}
                 },
               ],
             },
@@ -113,7 +122,8 @@ export default {
             tempo:60,
             type: contentType,
             sort: lesson.content && lesson.content.length > 0 ? (_.maxBy(lesson.content, "sort").sort + 1) : 1,
-            value: null
+            value: null,
+            url:"https://www.youtube.com/watch?v=EJQ-W3XgwBE"
           }
           lesson.content.push(content)
       this.updateLesson(lesson)

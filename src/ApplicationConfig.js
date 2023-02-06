@@ -39,7 +39,8 @@ export const ApplicationConfig = {
 
     contentType:{
         TEXT:"text",
-        GROOVE:"groove"
+        GROOVE:"groove",
+        VIDEO:"video"
 
     }
 }
