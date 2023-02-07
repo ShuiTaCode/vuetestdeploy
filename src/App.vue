@@ -65,8 +65,8 @@ export default {
   },
   data() {
     return {
-      // GLOBALEDIT:false,
-      GLOBALEDIT:true,
+      GLOBALEDIT:false,
+      // GLOBALEDIT:true,
       lessons:[
 
       ],
