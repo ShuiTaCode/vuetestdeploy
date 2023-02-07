@@ -7,7 +7,7 @@
 
     <AccordionTab :disabled="lesson.locked" :key="lesson.sort" v-for="lesson in sortBy(lessons,'sort')" >
       <template #header>
-        <InputText @keydown="handleInput" v-if="GLOBALEDIT" v-model="lesson.label"></InputText><div v-else>{{lesson.label}}</div>
+        <InputText  v-if="GLOBALEDIT" v-model="lesson.label"></InputText><div v-else>{{lesson.label}}</div>
         <span v-if="GLOBALEDIT"> locked
 
         <CheckBox style="pointer-events: all !important;" v-if="GLOBALEDIT" binary v-model="lesson.locked"></CheckBox>
@@ -65,8 +65,8 @@ export default {
   },
   data() {
     return {
-      GLOBALEDIT:false,
-      // GLOBALEDIT:true,
+      // GLOBALEDIT:false,
+      GLOBALEDIT:true,
       lessons:[
 
       ],

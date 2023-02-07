@@ -227,8 +227,9 @@ export default {
       for(const instrument in groupedCells){
         const track = _.find(this.dummyTrackArray,{instrument: instrument})
         if(track){
-          track.grid=(groupedCells[instrument])[0].grid
+          track.grid=_.minBy(groupedCells[instrument],'grid').grid
           track.initCells = groupedCells[instrument]
+          console.log("Refactored track")
         }else{
           console.error("initializeArray: No track for instrument: ",instrument)
         }
