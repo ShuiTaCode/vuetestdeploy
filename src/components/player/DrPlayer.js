@@ -53,7 +53,7 @@ export default class DrumPlayer {
   }
 
   stopPiece() {
-    this.clearAllIntervals(); //TODO pause und stop unterscheiden
+    this.clearAllIntervals();
     this.emit("end", { maxLength: this.maxLength });
     this.emit("stop");
     this.stop = true;

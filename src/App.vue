@@ -1,6 +1,11 @@
 <template>
-  <TopBar :model="items" />
-  <h2>Deine Lektionen</h2>
+  <TopBar :model="items" >
+
+  </TopBar>
+  <div style="display: flex;justify-content: center; margin:1rem">
+    <h2 style="font-family: Helvetica,fantasy">Drum Tracker </h2>
+    <div class="dt-logo" > </div>
+  </div>
 
   <BasicAccordion>
 
@@ -186,5 +191,13 @@ export default {
   .p-accordion-content{
     padding:0.5rem !important;
   }
+
+.dt-logo{
+  margin-left: 1rem;
+  width: 5rem;
+  height: 4rem;
+  background-size:100% 100%;
+  background-image: url('/public/logo.png');
+}
 
 </style>
