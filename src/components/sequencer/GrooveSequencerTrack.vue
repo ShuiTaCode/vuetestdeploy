@@ -12,7 +12,7 @@
         :class="'grid-cell-layout' + (cell.active ? ' active' : '')"
         v-for="cell in computedDummyArray"
         :key="cell.id"
-        :style="{ height: '5rem', minWidth: computedCellLength + 'px' }"
+        :style="{ height: '4rem', minWidth: computedCellLength + 'px' }"
       >
 
         <div style="display: flex;justify-content: center">

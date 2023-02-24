@@ -88,6 +88,22 @@ export default {
       carrotRefId:(Math.random()*1000000).toString(),
       dummyTrackArray: [
         {
+          id: 7,
+          solo: false,
+          mute: false,
+          grid: ApplicationConfig.signatures[3].value ,//quaternote/beat length
+          instrument: ApplicationConfig.drums.CSCYB,
+          initCells:[]
+        },
+        {
+          id: 8,
+          solo: false,
+          mute: false,
+          grid: ApplicationConfig.signatures[3].value ,//quaternote/beat length
+          instrument: ApplicationConfig.drums.RDCYB,
+          initCells:[]
+        },
+        {
           id: 1,
           solo: false,
           mute: false,
@@ -101,6 +117,28 @@ export default {
           mute: false,
           grid:  ApplicationConfig.signatures[3].value,
           instrument: ApplicationConfig.drums.SNDRM,
+          initCells:[]
+        },
+        {
+          id: 4,
+          solo: false,
+          mute: false,
+          grid: ApplicationConfig.signatures[3].value,
+          instrument: ApplicationConfig.drums.HITOM,
+          initCells:[]
+        }, {
+          id: 5,
+          solo: false,
+          mute: false,
+          grid: ApplicationConfig.signatures[3].value,
+          instrument: ApplicationConfig.drums.MDTOM,
+          initCells:[]
+        }, {
+          id: 6,
+          solo: false,
+          mute: false,
+          grid: ApplicationConfig.signatures[3].value,
+          instrument: ApplicationConfig.drums.LWTOM,
           initCells:[]
         },
         {

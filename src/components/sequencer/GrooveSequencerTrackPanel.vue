@@ -1,5 +1,5 @@
 <template>
-    <div style="height: 5rem;" class="track-panel" >
+    <div style="height: 4rem;" class="track-panel" >
       <div style="text-align: start;white-space: nowrap; ">
         {{label}}
       </div>
