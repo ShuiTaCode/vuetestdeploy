@@ -1,11 +1,13 @@
 <template>
-    <div style="height: 4rem;" class="track-panel" >
-      <div style="text-align: start;white-space: nowrap; ">
+    <div style="height: 2rem;" class="track-panel" >
+
+<!--/*        <div style="display: flex;flex-direction: column;justify-content: center;height:100%">*/-->
+
+          <DropDown style="width: 2.25rem;height:100%; padding:0"  :options="ApplicationConfig.signatures" optionLabel="label" v-model="computedGrid" optionValue="value"></DropDown>
+<!--        </div>-->
+      <div style="font-size:0.9rem;text-align: start;white-space: nowrap; margin-left:0.2rem;display: flex;flex-direction: column;justify-content: center ">
         {{label}}
       </div>
-
-        <DropDown style="width: 100%; padding:0"  :options="ApplicationConfig.signatures" optionLabel="label" v-model="computedGrid" optionValue="value"></DropDown>
-
 <!--      <div class="track-panel-buttons">-->
 <!--        <TrackPanelButton v-model:value="dummyTrack.mute" :button-type="ApplicationConfig.trackOptions.MUTE" > </TrackPanelButton>-->
 <!--        <TrackPanelButton v-model:value="dummyTrack.solo" :button-type="ApplicationConfig.trackOptions.SOLO" > </TrackPanelButton>-->
@@ -85,14 +87,14 @@ export default {
 <style scoped>
 .track-layout {
   display: flex;
-  height: 5vh;
+  height: 2vh;
 }
 .track-panel{
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  border: solid 1px gray;
-  padding:0 1rem 0 0.5rem;
+  justify-content: flex-start;
+  border: solid 1px #000000;
+  /*padding:0 1rem 0 0;*/
+  /*width:2.5rem;*/
   z-index: 33;
 }
 .track-panel-buttons{

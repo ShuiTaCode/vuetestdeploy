@@ -1,13 +1,13 @@
 export const ApplicationConfig = {
     drums:{
-        HIHAT: "Hi-Hat",
-        SNDRM:"Snare",
-        BSDRM:"Bass",
-        RDCYB:"Ride",
-        CSCYB:"Crash",
-        HITOM:"High-Tom",
-        MDTOM:"Mid-Tom",
-        LWTOM:"Low-Tom",
+        HIHAT: "Hh",
+        SNDRM:"Sd",
+        BSDRM:"bd",
+        RDCYB:"Rd",
+        CSCYB:"Ch",
+        HITOM:"Ht",
+        MDTOM:"Mt",
+        LWTOM:"Lt",
     },
 
     signatures:[
