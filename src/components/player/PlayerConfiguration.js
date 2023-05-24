@@ -3,8 +3,8 @@ import {ApplicationConfig} from "@/ApplicationConfig";
 
 const instruments ={}
 
-instruments[ApplicationConfig.drums.HIHAT] = {audio: new Audio("sounds/hihat.mp3"), path: "sounds/short/hihat.mp3",volume:0.1};
-instruments[ApplicationConfig.drums.SNDRM] = {audio: new Audio("sounds/snare.mp3"), path: "sounds/short/snare.mp3",volume:0.2};
+instruments[ApplicationConfig.drums.HIHAT] = {audio: new Audio("sounds/short/hihat.mp3"), path: "sounds/short/hihat.mp3",volume:0.1};
+instruments[ApplicationConfig.drums.SNDRM] = {audio: new Audio("sounds/snare.mp3"), path: "sounds/snare.mp3",volume:0.2};
 instruments[ApplicationConfig.drums.BSDRM] = {audio: new Audio("sounds/bassdrum.mp3"), path: "sounds/bassdrum.mp3",volume:0.5};
 instruments[ApplicationConfig.drums.HITOM] = {audio: new Audio("sounds/hitom.mp3"), path: "sounds/hitom.mp3",volume:0.1};
 instruments[ApplicationConfig.drums.MDTOM] = {audio: new Audio("sounds/mdtom.mp3"), path: "sounds/mdtom.mp3",volume:0.1};

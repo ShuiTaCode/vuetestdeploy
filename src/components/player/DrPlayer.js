@@ -3,6 +3,7 @@ import _ from "lodash";
 import { PlayerConfiguration } from "@/components/player/PlayerConfiguration";
 
 import { EventEmitter } from "events";
+import WebAudioPlayer from "@/components/player/WebAudioPlayer";
 
 export default class DrumPlayer {
   constructor() {
@@ -14,9 +15,11 @@ export default class DrumPlayer {
     this.stop = false;
     this.repeatInterval = null;
     this.timeOutInterval = null;
+    this.webAudioPlayerDelegate = new WebAudioPlayer();
   }
 
   emit(name, data) {
+    console.log("EMIT",name, data);
     this.eventEmitterDelegate.emit(name, data);
   }
 
@@ -54,6 +57,7 @@ export default class DrumPlayer {
 
   stopPiece() {
     this.clearAllIntervals();
+    this.webAudioPlayerDelegate.stop();
     this.emit("end", { maxLength: this.maxLength });
     this.emit("stop");
     this.stop = true;
@@ -61,9 +65,9 @@ export default class DrumPlayer {
 
   setEndTimeOut() {
     this.timeOutInterval = setTimeout(() => {
-      if(this.stop===false){
+      // if(this.stop===false){
         this.emit("end", { maxLength: this.maxLength });
-      }
+      // }
     }, this.maxLength * this.dummyTimeConstant);
   }
 
@@ -71,6 +75,7 @@ export default class DrumPlayer {
     console.log("prePareAndPlayPiece",drumPiece)
     this.preparePiece(drumPiece, tempo);
     this.setEndTimeOut();
+    console.log("beforePlayPiece")
     this.playPiece();
   }
 
@@ -79,16 +84,36 @@ export default class DrumPlayer {
     this.setTempo(tempo);
   }
 
+  playWebAudioPlayPiece(){
+    console.log(this.playAbleTracks)
+    const eventArrays = this.playAbleTracks.map(track =>  track.events.map((event) => {
+      return {
+        startingTime:(parseFloat(((event.start * this.dummyTimeConstant)/1000).toFixed(3))), audioPath :track.audioPath
+      }
+    }))
+    const allEvents = [].concat(...eventArrays);
+    console.log(allEvents)
+    this.webAudioPlayerDelegate.load(allEvents).then(()=>{
+         this.emit("playing");
+      this.webAudioPlayerDelegate.play().then(()=>{
+        this.emit("end", { maxLength: this.maxLength });
+        console.log("FINISHED")
+      })
+    })
+  }
+
   playPiece() {
-    if (this.playAbleTracks && this.playAbleTracks.length > 0) {
-      this.emit("playing");
-      this.play();
-    } else {
-      console.log(
-        "DrumPlayer: playPiece: Nothing to Play for piece: ",
-        this.drumPiece
-      );
-    }
+    console.log("Warum play piece nicht da?")
+    this.playWebAudioPlayPiece()
+    // if (this.playAbleTracks && this.playAbleTracks.length > 0) {
+    //   this.emit("playing");
+    //   this.play();
+    // } else {
+    //   console.log(
+    //     "DrumPlayer: playPiece: Nothing to Play for piece: ",
+    //     this.drumPiece
+    //   );
+    // }
   }
 
   clearAllIntervals() {
@@ -125,6 +150,9 @@ export default class DrumPlayer {
     const audio = PlayerConfiguration.instruments[instrument];
     if (audio) {
       return {
+        events: events,
+        audioPath:audio.path,
+        dummyTimeConstant:this.dummyTimeConstant,
         play: () => {
           for (const event of events) {
             setTimeout(() => {
