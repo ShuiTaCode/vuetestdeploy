@@ -6,7 +6,7 @@
         @click="play"
         class="p-button-icon"
         icon="pi pi-play"
-        :disabled="replaying"
+        :disabled="replaying || training"
         v-if="!playing"
       ></BasicButton>
       <BasicButton
@@ -15,7 +15,7 @@
         class="p-button-icon"
         icon="pi pi-stop"
         style="width: 20%; margin: 0.5rem 0.25rem 0.5rem 0.25rem"
-        :disabled="replaying"
+        :disabled="replaying || training"
       ></BasicButton>
 
       <BasicButton
@@ -23,7 +23,7 @@
         class="p-button-icon"
         icon="pi pi-replay"
         style="width: 20%; margin: 0.5rem 0.25rem 0.5rem 0.25rem"
-        :disabled="playing"
+        :disabled="playing || training"
         v-if="!replaying"
       ></BasicButton>
       <BasicButton
@@ -34,10 +34,24 @@
           style="width: 20%; margin: 0.5rem 0.25rem 0.5rem 0.25rem"
           :disabled="playing"
       ></BasicButton>
-
+      <BasicButton
+        @click="train"
+        class="p-button-icon"
+        icon="pi pi-history"
+        style="width: 20%; margin: 0.5rem 0.25rem 0.5rem 0.25rem"
+        :disabled="playing || replaying"
+        v-if="!training"
+      ></BasicButton>
+      <BasicButton
+          v-else
+          @click="pause"
+          class="p-button-icon"
+          icon="pi pi-stop"
+          style="width: 20%; margin: 0.5rem 0.25rem 0.5rem 0.25rem"
+      ></BasicButton>
       <NumberInput
         style="width: 50%; margin: 0.5rem"
-        v-model="bestPerMinute"
+        v-model="beatsPerMinute"
         suffix=" bpm"
         step="1"
         show-buttons
@@ -61,6 +75,12 @@ export default {
     return {
       playing:false,
       replaying:false,
+      training:false,
+      trainingState:{
+        counter:0,
+        repsBeforeIncrease:4,
+        increase:5
+      },
       drumPlayer:new DrumPlayer()
     }
   },
@@ -74,7 +94,7 @@ export default {
     },
   },
   computed: {
-    bestPerMinute: {
+    beatsPerMinute: {
       get() {
         return this.bpm;
       },
@@ -93,6 +113,7 @@ export default {
       // this.$emit("pause");
       this.playing=false
       this.replaying=false
+      this.training = false
       this.drumPlayer.stopPiece();
     },
     replay() {
@@ -101,11 +122,24 @@ export default {
       this.drumPlayer.prePareAndPlayPiece(this.audioEvents, this.bpm);
       // DrPlayer.replay(this.audioEvents, this.bpm)
     },
+    train(){
+      this.training = true
+      this.drumPlayer.prePareAndPlayPiece(this.audioEvents, this.bpm);
+    },
     handlePlayStart() {
       this.$emit("PlayStart")
     },
     handlePlayEnd(evt) {
-      if(this.replaying){
+      if(this.training){
+        this.trainingState.counter++
+        if(this.trainingState.counter%this.trainingState.repsBeforeIncrease===0){
+          this.beatsPerMinute += this.trainingState.increase
+          this.drumPlayer.prePareAndPlayPiece(this.audioEvents, this.bpm);
+        }else{
+          this.drumPlayer.prePareAndPlayPiece(this.audioEvents, this.bpm);
+        }
+      }
+      if(this.replaying && !this.training){
         this.drumPlayer.prePareAndPlayPiece(this.audioEvents, this.bpm);
       }else{
         this.playing=false

@@ -87,8 +87,9 @@ export default class DrumPlayer {
   playWebAudioPlayPiece(){
     console.log(this.playAbleTracks)
     const eventArrays = this.playAbleTracks.map(track =>  track.events.map((event) => {
+      console.log("track",track)
       return {
-        startingTime:(parseFloat(((event.start * this.dummyTimeConstant)/1000).toFixed(3))), audioPath :track.audioPath
+        startingTime:(parseFloat(((event.start * this.dummyTimeConstant)/1000).toFixed(3))), audioPath :track.audioPath,volume:track.volume,ghost:event.ghost
       }
     }))
     const allEvents = [].concat(...eventArrays);
@@ -105,15 +106,6 @@ export default class DrumPlayer {
   playPiece() {
     console.log("Warum play piece nicht da?")
     this.playWebAudioPlayPiece()
-    // if (this.playAbleTracks && this.playAbleTracks.length > 0) {
-    //   this.emit("playing");
-    //   this.play();
-    // } else {
-    //   console.log(
-    //     "DrumPlayer: playPiece: Nothing to Play for piece: ",
-    //     this.drumPiece
-    //   );
-    // }
   }
 
   clearAllIntervals() {
@@ -152,6 +144,7 @@ export default class DrumPlayer {
       return {
         events: events,
         audioPath:audio.path,
+        volume:audio.volume,
         dummyTimeConstant:this.dummyTimeConstant,
         play: () => {
           for (const event of events) {

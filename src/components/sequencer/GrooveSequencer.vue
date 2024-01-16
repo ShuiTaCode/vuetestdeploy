@@ -177,6 +177,7 @@ export default {
       for(const track of this.dummyTrackArray){
         result = result.concat(track.initCells)
       }
+      console.log("activeCells",this.activeCells)
       return result
     }
   },

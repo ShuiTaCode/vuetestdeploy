@@ -9,16 +9,11 @@
     <div class="track-layout">
       <div
         @click="handleCellSelect(cell)"
-        :class="'grid-cell-layout' + (cell.active ? ' active' : '')"
+        :class="'grid-cell-layout' + (cell.active ? ' active' : '')  + (cell.ghost ? ' ghost-select' : '') "
         v-for="cell in computedDummyArray"
         :key="cell.id"
         :style="{ height: '2rem', minWidth: computedCellLength + 'px' }"
       >
-
-        <div style="display: flex;justify-content: center">
-          <div class="glow-select" v-if="cell.active"></div>
-        </div>
-        <!--    <div @click="handleCellSelect(cell)" :class="'grid-cell-layout active'" v-for="cell in gridCellArray" :key="cell.id" :style="{height: '5vh',minWidth:computedCellLength + 'px'}" >-->
       </div>
     </div>
   </div>
@@ -27,7 +22,7 @@
 <script>
 // import { ApplicationConfig } from "@/ApplicationConfig";
 // import TrackPanelButton from "@/components/buttons/TrackPanelButton.vue";
-import _ from "lodash";
+
 import { ApplicationConfig } from "@/ApplicationConfig";
 // import {re} from "@babel/core/lib/vendor/import-meta-resolve";
 
@@ -54,27 +49,13 @@ export default {
       type:Array
     }
   },
-  data() {
-    return {
-      // scale: 500,
-      // computedInitArray: [],
-    };
-  },
-  watch:{
-    // computedInitArray(nv){
-    //   this.computedInitArrayRefreshiation(nv)
-    // },
-    // initArray(nv){
-    //   this.remoteDummyInitArrayInitialization(nv)
-    // }
-  },
   computed: {
-
     computedInitArray:{
       get(){
         return this.initArray
       },
       set(nv){
+        console.log("computedInitArray update",nv)
         this.$emit("update:initArray",nv)
       }
     },
@@ -99,9 +80,8 @@ export default {
       },
     },
     computedDummyArray() {
-
       const array = [];
-      const dummyConstant = 4; // länge von 10 viertelnoten
+      const dummyConstant = 40; // länge von 10 viertelnoten
       const notSoDummyConstant = dummyConstant / this.grid;
       for (let i = 0; i < notSoDummyConstant; i++) {
         array.push({
@@ -112,60 +92,45 @@ export default {
           active: this.computedInitArray.some((cell) => {
             return cell.start === i * this.grid;
           }),
+          ghost:this.computedInitArray.some((cell) => {
+            return (cell.start === i * this.grid) && cell.ghost;
+          }),
           instrument: this.instrument,
         });
       }
-      // console.log("compute computedDummyArray",array,this.computedInitArray)
       return array;
     },
   },
   methods: {
-    // remoteDummyInitArrayInitialization(array){
-    //   console.log("remoteDummyInitArrayInitialization",array)
-    //   const result = [];
-    //   for(const cell of this.computedInitArray){
-    //    cell.active = array.some(arrayCell=>{return arrayCell.start===cell.start})
-    //     result.push(cell)
-    //   }
-    //   this.computedInitArray=result
-    //   this.$emit("refresh",this.computedInitArray.filter((ele)=>{return ele.active}))
-    // },
 
 
     handleCellSelect(cell) {
-      var cellArray = [...this.computedDummyArray];
-      const existingCell = _.find(cellArray,{start:cell.start})
-      console.log("handleCellSelect",{cell,cellArray,existingCell})
+      let cellArray = [...this.computedDummyArray];
+      const existingCell = cellArray.find((c)=>{return c.start===cell.start})
+
+
       if(existingCell) {
+        console.log("Found existing cell... deleting it",{existingCell})
+        const filteredArray = this.computedInitArray.filter((arrayCell) => {
+          return arrayCell.start !== existingCell.start
+        })
+        console.log("done result",filteredArray)
         if (existingCell.active) {
-          this.computedInitArray = this.computedInitArray.filter((arrayCell) => {
-            return arrayCell.start !== existingCell.start
-          })
+          if(!existingCell.ghost){
+            filteredArray.push({...cell,ghost:true,active:true})
+            console.log("added ghost",filteredArray)
+          }
         } else {
-          const array = [...this.computedInitArray]
-          array.push(cell)
-          this.computedInitArray = array
+          filteredArray.push({...cell, active: true,ghost:false})
+          console.log("added new one",filteredArray)
         }
+
+        this.computedInitArray=filteredArray
       }
-      // const cell = _.find(cellArray, { id: cellId });
-      // console.log("CellSelect: cell: ", cell);
-      // if (cell) {
-      //   if (cell.active) {
-      //     cell.active = false;
-      //     (cell.start = cell.id * this.grid), (cell.grid = this.grid);
-      //     this.$emit("cell-select", cell);
-      //   } else {
-      //     cell.active = true;
-      //     (cell.start = cell.id * this.grid), (cell.grid = this.grid);
-      //     this.$emit("cell-select", cell);
-      //   }
-      // }
-      // this.computedInitArray = cellArray;
+
     },
   },
-  mounted() {
-    // this.remoteDummyInitArrayInitialization(this.initArray)
-  },
+
 };
 </script>
 
@@ -175,22 +140,20 @@ export default {
 }
 
 .grid-cell-layout {
-  background-color: lightsalmon;
-  border: solid black;
-  border-width: 2px 1px 2px 1px;
+  background-color: rgba(0, 123, 255, 0.09);
+  border: solid rgba(7, 7, 7, 0.11);
+  border-width: 2px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 .active {
-  background-color: #ee6127;
+  background-color: #007bff;
 }
-.track-layout .grid-cell-layout:first-child {
-  border-width: 2px 1px 2px 2px;
+.ghost-select {
+  background-color: rgba(0, 123, 255, 0.33);
 }
-.track-layout .grid-cell-layout:last-child {
-  border-width: 2px 2px 2px 1px;
-}
+
 .glow-select{
   /*width: 1rem;*/
   /*height: 1rem;*/
