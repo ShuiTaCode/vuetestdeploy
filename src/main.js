@@ -6,6 +6,7 @@ import Accordion from "primevue/accordion";
 import Button from "primevue/button";
 import ToggleButton from "primevue/togglebutton";
 import Dropdown from "primevue/dropdown";
+import Dialog from "primevue/dialog";
 import Topbar from "primevue/menubar"
 import InputNumber from "primevue/inputnumber";
 import Textarea from "primevue/textarea";
@@ -21,6 +22,7 @@ app.component("AccordionTab",AccordionTab)
 app.component("BasicButton",Button)
 app.component("CheckBox",Checkbox)
 app.component("DropDown",Dropdown)
+app.component("BasicDialog",Dialog)
 app.component("ToggleButton",ToggleButton)
 app.component("TextArea",Textarea)
 app.component("NumberInput",InputNumber)

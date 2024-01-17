@@ -29,7 +29,7 @@ export default {
   computed: {
     computedLabel() {
       if (this.buttonType) {
-        console.log("buttonType", this.buttonType[0]);
+        //console.log("buttonType", this.buttonType[0]);
         return this.buttonType[0].toUpperCase();
       } else {
         return "E";

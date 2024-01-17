@@ -35,7 +35,7 @@
           :disabled="playing"
       ></BasicButton>
       <BasicButton
-        @click="train"
+        @click="isTrainingDialogVisible=true"
         class="p-button-icon"
         icon="pi pi-history"
         style="width: 20%; margin: 0.5rem 0.25rem 0.5rem 0.25rem"
@@ -56,6 +56,7 @@
         step="1"
         show-buttons
       ></NumberInput>
+      <TrainingDialog v-model:visible="isTrainingDialogVisible" :start-tempo="trainingState.startTempo" @apply="applyAndStart"></TrainingDialog>
     </div>
   </div>
 </template>
@@ -67,16 +68,19 @@
 
 // import DrPlayer from "@/components/player/DrPlayer";
 import DrumPlayer from "@/components/player/DrPlayer";
+import TrainingDialog from "@/components/sequencer/TrainingDialog.vue";
 
 export default {
   name: "DrumPlayer",
-  components: {},
+  components: {TrainingDialog},
   data(){
     return {
+      isTrainingDialogVisible:false,
       playing:false,
       replaying:false,
       training:false,
       trainingState:{
+        startTempo:this.bpm,
         counter:0,
         repsBeforeIncrease:4,
         increase:5
@@ -104,6 +108,14 @@ export default {
     },
   },
   methods: {
+    applyAndStart(trainingState){
+      this.trainingState = trainingState
+      this.trainingState.counter=0;
+      console.log("this is the new training state:",this.trainingState)
+      this.beatsPerMinute = trainingState.startTempo
+      // console.log("whats peats perminute",this.beatsPerMinute,trainingState.startTempo)
+      this.train()
+    },
     play() {
       this.playing=true
       // this.$emit("play");
@@ -124,7 +136,7 @@ export default {
     },
     train(){
       this.training = true
-      this.drumPlayer.prePareAndPlayPiece(this.audioEvents, this.bpm);
+      this.drumPlayer.prePareAndPlayPiece(this.audioEvents, this.trainingState.startTempo);
     },
     handlePlayStart() {
       this.$emit("PlayStart")
@@ -132,9 +144,10 @@ export default {
     handlePlayEnd(evt) {
       if(this.training){
         this.trainingState.counter++
+        console.log("trainingState",this.trainingState,this.trainingState.repsBeforeIncrease,this.trainingState.counter%this.trainingState.repsBeforeIncrease)
         if(this.trainingState.counter%this.trainingState.repsBeforeIncrease===0){
+          this.drumPlayer.prePareAndPlayPiece(this.audioEvents,  this.beatsPerMinute + this.trainingState.increase);
           this.beatsPerMinute += this.trainingState.increase
-          this.drumPlayer.prePareAndPlayPiece(this.audioEvents, this.bpm);
         }else{
           this.drumPlayer.prePareAndPlayPiece(this.audioEvents, this.bpm);
         }

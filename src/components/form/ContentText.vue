@@ -35,7 +35,7 @@ text:{
         return this.text
       },
       set(nv){
-        console.log("set Text:",nv)
+        //console.log("set Text:",nv)
         this.$emit("update:text",nv)
       }
     }

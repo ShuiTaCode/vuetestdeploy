@@ -177,7 +177,7 @@ export default {
       for(const track of this.dummyTrackArray){
         result = result.concat(track.initCells)
       }
-      console.log("activeCells",this.activeCells)
+      //console.log("activeCells",this.activeCells)
       return result
     }
   },
@@ -193,7 +193,7 @@ export default {
 
   methods: {
     // handleRefresh(cells,track){
-    //   console.log("handleRefresh",cells)
+    //   //console.log("handleRefresh",cells)
     //   this.activeCells=this.activeCells.filter((cell)=>{return cell.instrument!==track.instrument})
     //   this.activeCells= this.activeCells.concat(cells)
     //   this.$emit("update:initArray",this.activeCells)
@@ -208,7 +208,7 @@ export default {
     animateCarrot() {
       clearInterval(this.carrotInterval);
       this.carrotInterval = setInterval(() => {
-        // console.log('animate',this.$refs.carrot.style)
+        // //console.log('animate',this.$refs.carrot.style)
         this.carrotX += 2.5 * (this.bpm / 60) * ((this.scale)/500);
         this.carrotElement.style.left =
           this.carrotX - this.$refs.scrollarea.scrollLeft + "px";
@@ -217,7 +217,7 @@ export default {
     handlePlayEnd(evt) {
       clearInterval(this.carrotInterval);
       this.carrotX = evt.maxLength;
-      console.log("PlayEnd");
+      //console.log("PlayEnd");
       // DrPlayer.stopPiece()
     },
     handlePlayStart() {
@@ -225,7 +225,7 @@ export default {
       // DrPlayer.playPiece(this.activeCells,this.bpm)
       this.carrotX = 0;
       this.animateCarrot();
-      console.log("PlayStart");
+      //console.log("PlayStart");
     },
     // replayGroove(){
     //   DrPlayer.replay(this.activeCells,this.bpm)
@@ -235,7 +235,7 @@ export default {
       return trackId.toString() + cellId.toString();
     },
     // handleCellSelect(cell) {
-    //   console.log("Received cell in component above: ", cell);
+    //   //console.log("Received cell in component above: ", cell);
     //   if (cell) {
     //     this.activeCells = this.activeCells.filter((actCell) => {
     //       return (
@@ -247,9 +247,9 @@ export default {
     //       this.activeCells.push(cell);
     //     }
     //   } else {
-    //     console.log("handleCellSelect: handleCellSelect: Cell undefined", cell);
+    //     //console.log("handleCellSelect: handleCellSelect: Cell undefined", cell);
     //   }
-    //   console.log(
+    //   //console.log(
     //     "handleCellSelect: handleCellSelect: activeCells[] = ",
     //     this.activeCells
     //   );
@@ -262,13 +262,13 @@ export default {
     },
     initializeArray(array){
       const groupedCells = _.groupBy(array,'instrument')
-      console.log("initializeArray",array,groupedCells)
+      //console.log("initializeArray",array,groupedCells)
       for(const instrument in groupedCells){
         const track = _.find(this.dummyTrackArray,{instrument: instrument})
         if(track){
           track.grid=_.minBy(groupedCells[instrument],'grid').grid
           track.initCells = groupedCells[instrument]
-          console.log("Refactored track")
+          //console.log("Refactored track")
         }else{
           console.error("initializeArray: No track for instrument: ",instrument)
         }

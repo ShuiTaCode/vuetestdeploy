@@ -19,7 +19,7 @@ export default class DrumPlayer {
   }
 
   emit(name, data) {
-    console.log("EMIT",name, data);
+    // //console.log("EMIT",name, data);
     this.eventEmitterDelegate.emit(name, data);
   }
 
@@ -33,7 +33,7 @@ export default class DrumPlayer {
     this.drumPiece = drumPiece;
     this.maxLength = _.max(
       this.drumPiece.map((event) => {
-        // console.log(event.start + event.grid)
+        // //console.log(event.start + event.grid)
         return event.start + event.grid;
       })
     );
@@ -42,7 +42,7 @@ export default class DrumPlayer {
   loadPiece(drumPiece) {
     this.setDrumPiece(drumPiece);
     this.setPlayAbleTracks(drumPiece);
-    console.log({ playAbleTracks: this.playAbleTracks });
+    //console.log({ playAbleTracks: this.playAbleTracks });
   }
 
   setPlayAbleTracks(drumPiece) {
@@ -72,10 +72,10 @@ export default class DrumPlayer {
   }
 
   prePareAndPlayPiece(drumPiece, tempo) {
-    console.log("prePareAndPlayPiece",drumPiece)
+    console.log("prePareAndPlayPiece with tempo",tempo)
     this.preparePiece(drumPiece, tempo);
     this.setEndTimeOut();
-    console.log("beforePlayPiece")
+    //console.log("beforePlayPiece")
     this.playPiece();
   }
 
@@ -85,26 +85,26 @@ export default class DrumPlayer {
   }
 
   playWebAudioPlayPiece(){
-    console.log(this.playAbleTracks)
+    //console.log(this.playAbleTracks)
     const eventArrays = this.playAbleTracks.map(track =>  track.events.map((event) => {
-      console.log("track",track)
+      //console.log("track",track)
       return {
         startingTime:(parseFloat(((event.start * this.dummyTimeConstant)/1000).toFixed(3))), audioPath :track.audioPath,volume:track.volume,ghost:event.ghost
       }
     }))
     const allEvents = [].concat(...eventArrays);
-    console.log(allEvents)
+    //console.log(allEvents)
     this.webAudioPlayerDelegate.load(allEvents).then(()=>{
          this.emit("playing");
       this.webAudioPlayerDelegate.play().then(()=>{
         this.emit("end", { maxLength: this.maxLength });
-        console.log("FINISHED")
+        //console.log("FINISHED")
       })
     })
   }
 
   playPiece() {
-    console.log("Warum play piece nicht da?")
+    //console.log("Warum play piece nicht da?")
     this.playWebAudioPlayPiece()
   }
 
@@ -125,7 +125,7 @@ export default class DrumPlayer {
   replay(drumPiece, tempo) {
 
     if (drumPiece && drumPiece.length > 0) {
-      console.log("replay",{drumPiece})
+      //console.log("replay",{drumPiece})
       this.prePareAndPlayPiece(drumPiece, tempo);
       this.setReplayTimeOut(drumPiece, tempo);
     }

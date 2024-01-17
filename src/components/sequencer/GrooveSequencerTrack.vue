@@ -55,7 +55,7 @@ export default {
         return this.initArray
       },
       set(nv){
-        console.log("computedInitArray update",nv)
+        //console.log("computedInitArray update",nv)
         this.$emit("update:initArray",nv)
       }
     },
@@ -110,19 +110,19 @@ export default {
 
 
       if(existingCell) {
-        console.log("Found existing cell... deleting it",{existingCell})
+        //console.log("Found existing cell... deleting it",{existingCell})
         const filteredArray = this.computedInitArray.filter((arrayCell) => {
           return arrayCell.start !== existingCell.start
         })
-        console.log("done result",filteredArray)
+        //console.log("done result",filteredArray)
         if (existingCell.active) {
           if(!existingCell.ghost){
             filteredArray.push({...cell,ghost:true,active:true})
-            console.log("added ghost",filteredArray)
+            //console.log("added ghost",filteredArray)
           }
         } else {
           filteredArray.push({...cell, active: true,ghost:false})
-          console.log("added new one",filteredArray)
+          //console.log("added new one",filteredArray)
         }
 
         this.computedInitArray=filteredArray

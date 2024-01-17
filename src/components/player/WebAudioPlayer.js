@@ -54,7 +54,7 @@ export default class WebAudioPlayer {
 
         audioBuffers.forEach((buffer, index) => {
             const { startingTime, volume ,ghost } = arg[index];
-            console.log("createBufferSources",{ startingTime, volume ,ghost })
+            //console.log("createBufferSources",{ startingTime, volume ,ghost })
 
             // Create a source node from the buffer
             const source = this.audioContext.createBufferSource();
@@ -115,7 +115,7 @@ export default class WebAudioPlayer {
     }
 
     onAllSourcesEnded() {
-        console.log("All sources have ended");
+        //console.log("All sources have ended");
         // Override this method in subclasses or assign a function to it at runtime to respond to all sources ending.
     }
 }
