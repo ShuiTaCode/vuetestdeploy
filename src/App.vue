@@ -227,7 +227,7 @@ export default {
         .then((r) => {
           console.log("SUCCESS!")
           this.lessons = r.data;
-          // this.loading=false
+          this.loading=false
         })
         .catch(() => {
           console.log("FAILURE: Could not reach server -  try again...");
