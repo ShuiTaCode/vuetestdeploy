@@ -4,7 +4,7 @@
     <h2 style="font-family: Helvetica, fantasy">Drum Tracker</h2>
     <div class="dt-logo"></div>
   </div>
-<div v-if="loading" style="border-radius: 2rem ;display: flex;justify-content: center; text-align: center;background-color:#efefef;width:80vh;padding:2rem;margin: auto">
+<div v-if="loading" style="border-radius: 2rem ;display: flex;justify-content: center; text-align: center;background-color:#efefef;width:70%;padding:2rem;margin: auto">
   <div>
 
     <div>
@@ -227,7 +227,7 @@ export default {
         .then((r) => {
           console.log("SUCCESS!")
           this.lessons = r.data;
-          this.loading=false
+          // this.loading=false
         })
         .catch(() => {
           console.log("FAILURE: Could not reach server -  try again...");
